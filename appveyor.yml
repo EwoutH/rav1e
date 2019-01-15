@@ -23,15 +23,15 @@ install:
     - rustc -vV
     - cargo -vV
     - rustup target add %target%
-    - if %target% = aarch64-pc-windows-msvc git clone https://github.com/retep998/winapi-rs.git & cd winapi & cargo build
+    - if %target% == "aarch64-pc-windows-msvc" git clone https://github.com/retep998/winapi-rs.git & cd winapi & cargo build
 
 build_script:
     - git submodule update --init
     - cargo build --release --target=%target%
 
-test_script:
-    - git submodule update --init
-    - cargo test --target=%target% --verbose
+#test_script:
+#    - git submodule update --init
+#    - cargo test --target=%target% --verbose
 
 artifacts:
     - path: target\$(target)\release\rav1e.exe
