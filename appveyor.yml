@@ -23,7 +23,7 @@ install:
     - rustc -vV
     - cargo -vV
     - rustup target add %target%
-    - if %target% == "aarch64-pc-windows-msvc" git clone https://github.com/retep998/winapi-rs.git & cd winapi & cargo build
+    - if %target% == aarch64-pc-windows-msvc git clone https://github.com/retep998/winapi-rs.git & cd winapi & cargo build
 
 build_script:
     - git submodule update --init
