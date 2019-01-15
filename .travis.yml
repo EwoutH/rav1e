@@ -24,6 +24,9 @@ before_install:
     - cmake .. && make && sudo make install
     - kcov --version
     - cargo install cargo-kcov
+    
+cache: cargo
+ 
 jobs:
   include:
       - name: "Build & Coveralls"
