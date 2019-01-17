@@ -30,6 +30,7 @@ quote = "^0.6.10" # hack for proc-macro-hack
 num-traits = "0.2"
 paste = "0.1"
 dav1d-sys = { version = "0.1.1", optional = true }
+winapi = { git = "https://github.com/retep998/winapi-rs.git", branch = "0.3" }
 
 [build-dependencies]
 cmake = { version = "0.1", optional = true }
