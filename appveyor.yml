@@ -39,6 +39,8 @@ artifacts:
 deploy:
   - provider: GitHub
     artifact: target\$(target)\release\rav1e.exe
+    auth_token:
+      secure: 302d349c6a1ae40daeaae7ac1bc919fdb8c97572
     prerelease: true
     on:
       appveyor_repo_tag: true
