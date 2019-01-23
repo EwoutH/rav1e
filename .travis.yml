@@ -3,15 +3,15 @@ addons:
   apt:
     packages: binutils-dev libcurl4-openssl-dev zlib1g-dev libdw-dev libiberty-dev
 before_install:
-    - wget -O cmake.sh https://cmake.org/files/v3.10/cmake-3.10.2-Linux-x86_64.sh
+    - wget -O cmake.sh https://cmake.org/files/v3.13/cmake-3.13.3-Linux-x86_64.sh
     - sudo sh cmake.sh --skip-license --exclude-subdir --prefix=/usr
     - sudo rm -fR /usr/local/cmake*
     - hash -r
     - which cmake
     - cmake --version
-    - wget https://www.nasm.us/pub/nasm/releasebuilds/2.13.03/nasm-2.13.03.tar.xz
-    - tar -xvf nasm-2.13.03.tar.xz
-    - cd nasm-2.13.03
+    - wget https://www.nasm.us/pub/nasm/releasebuilds/2.14.02/nasm-2.14.02.tar.gz
+    - tar -xvf nasm-2.14.02.tar.xz
+    - cd nasm-2.14.02
     - ./configure
     - make
     - sudo make install
