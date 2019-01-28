@@ -4,7 +4,9 @@ os: osx
 addons:
   artifacts: true
 
-install: brew create https://github.com/xiph/rav1e/archive/master.tar.gz
+install:
+ - brew create https://github.com/xiph/rav1e/archive/master.tar.gz
+ - while read line; do echo "$line"; done < \**\rav1e.rb
 
 script:
  - brew install rav1e
