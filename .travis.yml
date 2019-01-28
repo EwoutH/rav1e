@@ -1,37 +1,11 @@
 language: rust
+os: osx
+
 addons:
-  apt:
-    packages: binutils-dev libcurl4-openssl-dev zlib1g-dev libdw-dev libiberty-dev
-before_install:
-    - wget -O cmake.sh https://cmake.org/files/v3.10/cmake-3.10.2-Linux-x86_64.sh
-    - sudo sh cmake.sh --skip-license --exclude-subdir --prefix=/usr
-    - sudo rm -fR /usr/local/cmake*
-    - hash -r
-    - which cmake
-    - cmake --version
-    - wget https://www.nasm.us/pub/nasm/releasebuilds/2.13.03/nasm-2.13.03.tar.xz
-    - tar -xvf nasm-2.13.03.tar.xz
-    - cd nasm-2.13.03
-    - ./configure
-    - make
-    - sudo make install
-    - nasm --version
-    - cd ..
-    - wget -O kcov.tar.gz https://github.com/SimonKagstrom/kcov/archive/v36.tar.gz
-    - tar -xvf kcov.tar.gz
-    - cd kcov-36
-    - mkdir .build && cd .build
-    - cmake .. && make && sudo make install
-    - kcov --version
-    - cargo install cargo-kcov
-jobs:
-  include:
-      - name: "Build & Coveralls"
-        script: cargo build --verbose &&
-                cargo kcov --coveralls --features=decode_test -- --verify --exclude-pattern=$HOME/.cargo,aom_build,.h,test
-      - name: "Tests"
-        script: cargo test --verbose --release --features=decode_test -- --ignored
-      - name: "Bench"
-        script: cargo bench --verbose
-      - name: "Doc"
-        script: cargo doc --verbose
+  artifacts: true
+
+install: brew create https://github.com/xiph/rav1e/archive/master.tar.gz
+
+script:
+ - brew install rav1e
+ - brew install --debug --verbose rav1e
