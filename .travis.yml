@@ -5,8 +5,10 @@ addons:
   artifacts: true
 
 install:
+ - brew update
  - brew create https://github.com/xiph/rav1e/archive/master.tar.gz
  - while read line; do echo "$line"; done < \**\rav1e.rb
+ - brew audit --new-formula rav1e
 
 script:
  - brew install rav1e
