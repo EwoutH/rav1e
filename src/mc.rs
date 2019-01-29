@@ -152,13 +152,6 @@ mod nasm {
     i32
   );
 
-  unsafe extern fn put_invalid(
-    _dst: *mut u8, _dst_stride: libc::ptrdiff_t, _src: *const u8,
-    _src_stride: libc::ptrdiff_t, _w: i32, _h: i32, _mx: i32, _my: i32
-  ) {
-    unimplemented!();
-  }
-
   macro_rules! decl_mc_fns {
     ($($func_name:ident),+) => {
       extern {
@@ -186,37 +179,24 @@ mod nasm {
   );
 
   fn select_put_fn_avx2(mode_x: FilterMode, mode_y: FilterMode) -> PutFn {
+    use self::FilterMode::*;
     match (mode_x, mode_y) {
-      (FilterMode::REGULAR, FilterMode::REGULAR) =>
-        rav1e_put_8tap_regular_avx2,
-      (FilterMode::REGULAR, FilterMode::SMOOTH) =>
-        rav1e_put_8tap_regular_smooth_avx2,
-      (FilterMode::REGULAR, FilterMode::SHARP) =>
-        rav1e_put_8tap_regular_sharp_avx2,
-      (FilterMode::SMOOTH, FilterMode::REGULAR) =>
-        rav1e_put_8tap_smooth_regular_avx2,
-      (FilterMode::SMOOTH, FilterMode::SMOOTH) => rav1e_put_8tap_smooth_avx2,
-      (FilterMode::SMOOTH, FilterMode::SHARP) =>
-        rav1e_put_8tap_smooth_sharp_avx2,
-      (FilterMode::SHARP, FilterMode::REGULAR) =>
-        rav1e_put_8tap_sharp_regular_avx2,
-      (FilterMode::SHARP, FilterMode::SMOOTH) =>
-        rav1e_put_8tap_sharp_smooth_avx2,
-      (FilterMode::SHARP, FilterMode::SHARP) => rav1e_put_8tap_sharp_avx2,
-      (FilterMode::BILINEAR, FilterMode::BILINEAR) => rav1e_put_bilin_avx2,
-      (_, _) => put_invalid
+      (REGULAR, REGULAR) => rav1e_put_8tap_regular_avx2,
+      (REGULAR, SMOOTH) => rav1e_put_8tap_regular_smooth_avx2,
+      (REGULAR, SHARP) => rav1e_put_8tap_regular_sharp_avx2,
+      (SMOOTH, REGULAR) => rav1e_put_8tap_smooth_regular_avx2,
+      (SMOOTH, SMOOTH) => rav1e_put_8tap_smooth_avx2,
+      (SMOOTH, SHARP) => rav1e_put_8tap_smooth_sharp_avx2,
+      (SHARP, REGULAR) => rav1e_put_8tap_sharp_regular_avx2,
+      (SHARP, SMOOTH) => rav1e_put_8tap_sharp_smooth_avx2,
+      (SHARP, SHARP) => rav1e_put_8tap_sharp_avx2,
+      (BILINEAR, BILINEAR) => rav1e_put_bilin_avx2,
+      (_, _) => unreachable!()
     }
   }
 
   type PrepFn =
     unsafe extern fn(*mut i16, *const u8, libc::ptrdiff_t, i32, i32, i32, i32);
-
-  unsafe extern fn prep_invalid(
-    _tmp: *mut i16, _src: *const u8, _src_stride: libc::ptrdiff_t, _w: i32,
-    _h: i32, _mx: i32, _my: i32
-  ) {
-    unimplemented!();
-  }
 
   macro_rules! decl_mct_fns {
     ($($func_name:ident),+) => {
@@ -245,25 +225,19 @@ mod nasm {
   );
 
   fn select_prep_fn_avx2(mode_x: FilterMode, mode_y: FilterMode) -> PrepFn {
+    use self::FilterMode::*;
     match (mode_x, mode_y) {
-      (FilterMode::REGULAR, FilterMode::REGULAR) =>
-        rav1e_prep_8tap_regular_avx2,
-      (FilterMode::REGULAR, FilterMode::SMOOTH) =>
-        rav1e_prep_8tap_regular_smooth_avx2,
-      (FilterMode::REGULAR, FilterMode::SHARP) =>
-        rav1e_prep_8tap_regular_sharp_avx2,
-      (FilterMode::SMOOTH, FilterMode::REGULAR) =>
-        rav1e_prep_8tap_smooth_regular_avx2,
-      (FilterMode::SMOOTH, FilterMode::SMOOTH) => rav1e_prep_8tap_smooth_avx2,
-      (FilterMode::SMOOTH, FilterMode::SHARP) =>
-        rav1e_prep_8tap_smooth_sharp_avx2,
-      (FilterMode::SHARP, FilterMode::REGULAR) =>
-        rav1e_prep_8tap_sharp_regular_avx2,
-      (FilterMode::SHARP, FilterMode::SMOOTH) =>
-        rav1e_prep_8tap_sharp_smooth_avx2,
-      (FilterMode::SHARP, FilterMode::SHARP) => rav1e_prep_8tap_sharp_avx2,
-      (FilterMode::BILINEAR, FilterMode::BILINEAR) => rav1e_prep_bilin_avx2,
-      (_, _) => prep_invalid
+      (REGULAR, REGULAR) => rav1e_prep_8tap_regular_avx2,
+      (REGULAR, SMOOTH) => rav1e_prep_8tap_regular_smooth_avx2,
+      (REGULAR, SHARP) => rav1e_prep_8tap_regular_sharp_avx2,
+      (SMOOTH, REGULAR) => rav1e_prep_8tap_smooth_regular_avx2,
+      (SMOOTH, SMOOTH) => rav1e_prep_8tap_smooth_avx2,
+      (SMOOTH, SHARP) => rav1e_prep_8tap_smooth_sharp_avx2,
+      (SHARP, REGULAR) => rav1e_prep_8tap_sharp_regular_avx2,
+      (SHARP, SMOOTH) => rav1e_prep_8tap_sharp_smooth_avx2,
+      (SHARP, SHARP) => rav1e_prep_8tap_sharp_avx2,
+      (BILINEAR, BILINEAR) => rav1e_prep_bilin_avx2,
+      (_, _) => unreachable!()
     }
   }
 
@@ -281,7 +255,7 @@ mod nasm {
   ) {
     #[cfg(all(target_arch = "x86_64", not(windows), feature = "nasm"))]
     {
-      if is_x86_feature_detected!("avx2") {
+    if is_x86_feature_detected!("avx2") && bit_depth == 8 {
         let mut dst8: AlignedArray<[u8; 128 * 128]> =
           UninitializedAlignedArray();
         let mut src8: [u8; (128 + 7) * (128 + 7)] =
@@ -329,7 +303,7 @@ mod nasm {
     col_frac: i32, row_frac: i32, mode_x: FilterMode, mode_y: FilterMode,
     bit_depth: usize
   ) {
-    if is_x86_feature_detected!("avx2") {
+    if is_x86_feature_detected!("avx2") && bit_depth == 8 {
       let mut src8: [u8; (128 + 7) * (128 + 7)] =
         unsafe { mem::uninitialized() };
       convert_slice_2d(
@@ -363,7 +337,7 @@ mod nasm {
     dst: &'a mut PlaneMutSlice<'a>, tmp1: &[i16], tmp2: &[i16], width: usize,
     height: usize, bit_depth: usize
   ) {
-    if is_x86_feature_detected!("avx2") {
+    if is_x86_feature_detected!("avx2") && bit_depth == 8 {
       let mut dst8: AlignedArray<[u8; 128 * 128]> =
         UninitializedAlignedArray();
       unsafe {
