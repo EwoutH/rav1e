@@ -5,8 +5,7 @@ addons:
 
 install:
  - brew update
- - brew create https://github.com/xiph/rav1e/archive/master.tar.gz
- - while read line; do echo "$line"; done < \**\rav1e.rb
+ - brew create https://github.com/xiph/rav1e/archive/20190129.tar.gz
  - brew audit --new-formula rav1e
 
 script:
