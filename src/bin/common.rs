@@ -28,6 +28,7 @@ pub struct CliOptions {
   pub io: EncoderIO,
   pub enc: EncoderConfig,
   pub limit: usize,
+  pub skip: usize,
   pub verbose: bool,
 }
 
@@ -80,6 +81,12 @@ pub fn parse_cli() -> CliOptions {
         .help("Maximum number of frames to encode")
         .short("l")
         .long("limit")
+        .takes_value(true)
+        .default_value("0")
+    .arg(
+      Arg::with_name("SKIP")
+        .help("Number of frames to skip from start of clip")
+        .long("skip")
         .takes_value(true)
         .default_value("0")
     )
@@ -248,6 +255,7 @@ pub fn parse_cli() -> CliOptions {
     io,
     enc: parse_config(&matches),
     limit: matches.value_of("LIMIT").unwrap().parse().unwrap(),
+    skip: matches.value_of("SKIP").unwrap().parse().unwrap(),
     verbose: matches.is_present("VERBOSE"),
   }
 }
