@@ -3,12 +3,12 @@ image: Visual Studio 2017
 environment:
   host: x86_64-pc-windows-msvc
   matrix:
-    - platform: x86_64
-      target: x86_64-pc-windows-msvc
-      channel: stable
+#    - platform: x86_64
+#      target: x86_64-pc-windows-msvc
+#      channel: beta
     - platform: arm64
       target: aarch64-pc-windows-msvc
-      channel: nightly
+      channel: beta
       build_para: "--no-default-features --features=binaries"
 matrix:
   allow_failures:
