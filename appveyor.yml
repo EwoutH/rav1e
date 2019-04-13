@@ -30,6 +30,8 @@ install:
     - rustc -vV
     - cargo -vV
     - rustup target add %target%
+    - cargo install cargo-tree
+    - cargo tree
 
 on_success:
     - sccache -s
