@@ -46,25 +46,37 @@ after_script:
 
 jobs:
   include:
-      - name: "Arm64"
+      - name: "Arm64 Linux"
+        dist: xenial
+        before_install: 
+         - rustup target add aarch64-unknown-linux-gnu
+        script:
+         - cargo build --release --target=aarch64-unknown-linux-gnu
+      - name: "Arm64 Windows"
+        os: windows
+        before_install: 
+         - rustup target add aarch64-pc-windows-msvc
+        script:
+         - cargo build --release --target=aarch64-pc-windows-msvc
+      - name: "Arm64 cross Windows"
         dist: xenial
         before_install: 
          - rustup target add aarch64-pc-windows-msvc
         script:
          - cargo build --release --target=aarch64-pc-windows-msvc
-      - name: "Build & Coveralls"
-        script:
-         - cargo install cargo-kcov
-         - kcov --version
-         - RUSTFLAGS="-C link-dead-code" cargo build --features=decode_test,quick_test --tests --verbose
-         - travis_wait cargo kcov -v --coveralls --no-clean-rebuild -- --verify --exclude-pattern=$HOME/.cargo,aom_build,.h,test
-      - name: "Tests"
-        script: cargo test --verbose --release --features=decode_test -- --ignored
-      - name: "Bench"
-        script: cargo bench --verbose
-      - name: "Doc & Clippy (linter): verifying code quality"
-        script:
-         - cargo doc --verbose
-         - rustup component add clippy
-         - cargo clippy --version
-         - cargo clippy -- -D warnings -A clippy::cast_lossless -A clippy::cast_ptr_alignment -A clippy::cyclomatic_complexity -A clippy::needless_range_loop -A clippy::too_many_arguments -A clippy::type_complexity -A clippy::verbose_bit_mask --verbose
+#      - name: "Build & Coveralls"
+#        script:
+#         - cargo install cargo-kcov
+#         - kcov --version
+#         - RUSTFLAGS="-C link-dead-code" cargo build --features=decode_test,quick_test --tests --verbose
+#         - travis_wait cargo kcov -v --coveralls --no-clean-rebuild -- --verify --exclude-pattern=$HOME/.cargo,aom_build,.h,test
+#      - name: "Tests"
+#        script: cargo test --verbose --release --features=decode_test -- --ignored
+#      - name: "Bench"
+#        script: cargo bench --verbose
+#      - name: "Doc & Clippy (linter): verifying code quality"
+#        script:
+#         - cargo doc --verbose
+#         - rustup component add clippy
+#         - cargo clippy --version
+#         - cargo clippy -- -D warnings -A clippy::cast_lossless -A clippy::cast_ptr_alignment -A clippy::cyclomatic_complexity -A clippy::needless_range_loop -A clippy::too_many_arguments -A clippy::type_complexity -A clippy::verbose_bit_mask --verbose
