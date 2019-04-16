@@ -54,6 +54,7 @@ jobs:
          - rustc -vV
          - cargo -vV
          - rustup target add aarch64-pc-windows-msvc
+        script:
          - cargo build --release --target=aarch64-pc-windows-msvc
       - name: "Build & Coveralls"
         script:
