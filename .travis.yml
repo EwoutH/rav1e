@@ -5,7 +5,8 @@ env:
   - RUST_BACKTRACE=1
 addons:
   apt:
-    packages: binutils-dev libcurl4-openssl-dev zlib1g-dev libdw-dev libiberty-dev ninja-build gcc-aarch64-linux-gnu gcc-8-aarch64-linux-gnu
+    packages: binutils-dev libcurl4-openssl-dev zlib1g-dev libdw-dev libiberty-dev ninja-build gcc-aarch64-linux-gnu
+    
 before_install:
     - wget -O cmake.sh https://cmake.org/files/v3.13/cmake-3.13.3-Linux-x86_64.sh
     - sudo sh cmake.sh --skip-license --exclude-subdir --prefix=/usr
@@ -51,7 +52,7 @@ jobs:
         before_install: 
          - rustup target add aarch64-unknown-linux-gnu
         script:
-         - CC=gcc-8-aarch64-linux-gnu cargo build --release --target=aarch64-unknown-linux-gnu --no-default-features --features=binaries
+         - CC=gcc-aarch64-linux-gnu cargo build --release --target=aarch64-unknown-linux-gnu --no-default-features --features=binaries
       - name: "Arm64 Windows"
         os: windows
         before_install: 
@@ -63,7 +64,7 @@ jobs:
         before_install: 
          - rustup target add aarch64-pc-windows-msvc
         script:
-         - CC=gcc-8-aarch64-linux-gnu cargo build --release --target=aarch64-pc-windows-msvc --no-default-features --features=binaries
+         - CC=gcc-aarch64-linux-gnu cargo build --release --target=aarch64-pc-windows-msvc --no-default-features --features=binaries
 #      - name: "Build & Coveralls"
 #        script:
 #         - cargo install cargo-kcov
