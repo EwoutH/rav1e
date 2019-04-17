@@ -50,9 +50,9 @@ jobs:
         dist: xenial
         before_install: 
          - rustup target add aarch64-unknown-linux-gnu
-         - apt install gcc-aarch64-linux-gnu
+         - apt install gcc-8-aarch64-linux-gnu
         script:
-         - CC=gcc-aarch64-linux-gnu cargo build --release --target=aarch64-unknown-linux-gnu --no-default-features --features=binaries
+         - CC=gcc-8-aarch64-linux-gnu cargo build --release --target=aarch64-unknown-linux-gnu --no-default-features --features=binaries
       - name: "Arm64 Windows"
         os: windows
         before_install: 
@@ -63,9 +63,9 @@ jobs:
         dist: xenial
         before_install: 
          - rustup target add aarch64-pc-windows-msvc
-         - apt install gcc-aarch64-linux-gnu
+         - apt install gcc-8-aarch64-linux-gnu
         script:
-         - CC=gcc-aarch64-linux-gnu cargo build --release --target=aarch64-pc-windows-msvc --no-default-features --features=binaries
+         - CC=gcc-8-aarch64-linux-gnu cargo build --release --target=aarch64-pc-windows-msvc --no-default-features --features=binaries
 #      - name: "Build & Coveralls"
 #        script:
 #         - cargo install cargo-kcov
