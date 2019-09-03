@@ -338,8 +338,8 @@ impl SpeedSettings {
   /// The speed settings vary depending on speed value from 0 to 10.
   /// - 10 (fastest): min block size 64x64, TX domain distortion, fast deblock, no scenechange detection.
   /// - 9: min block size 64x64, TX domain distortion, fast deblock.
-  /// - 8: min block size 8x8, reduced TX set, TX domain distortion, fast deblock.
-  /// - 7: min block size 8x8, reduced TX set, TX domain distortion.
+  /// - 8: min block size 16x16, reduced TX set, TX domain distortion, fast deblock.
+  /// - 7: min block size 8x8, reduced TX set, TX domain distortion, fast deblock.
   /// - 6: min block size 8x8, reduced TX set, TX domain distortion.
   /// - 5 (default): min block size 8x8, reduced TX set, TX domain distortion, complex pred modes for keyframes.
   /// - 4: min block size 8x8, TX domain distortion, complex pred modes for keyframes.
@@ -372,8 +372,10 @@ impl SpeedSettings {
   fn min_block_size_preset(speed: usize) -> BlockSize {
     let min_block_size = if speed == 0 {
       BlockSize::BLOCK_4X4
-    } else if speed <= 8 {
+    } else if speed <= 7 {
       BlockSize::BLOCK_8X8
+    } else if speed == 8 {
+      BlockSize::BLOCK_16X16
     } else {
       BlockSize::BLOCK_64X64
     };
@@ -391,7 +393,7 @@ impl SpeedSettings {
   }
 
   fn fast_deblock_preset(speed: usize) -> bool {
-    speed >= 8
+    speed >= 7
   }
 
   fn reduced_tx_set_preset(speed: usize) -> bool {
