@@ -9,6 +9,9 @@ environment:
     - platform: arm64
       target: aarch64-pc-windows-msvc
       channel: nightly
+      branches:
+        only:
+        - master
 matrix:
   allow_failures:
     - platform: arm64
