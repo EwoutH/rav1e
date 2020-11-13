@@ -15,7 +15,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: ilammy/setup-nasm@v1
+    - uses: ilammy/setup-nasm@v1
     - name: Install stable
       uses: actions-rs/toolchain@v1
       with:
