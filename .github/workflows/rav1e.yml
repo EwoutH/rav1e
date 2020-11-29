@@ -39,8 +39,9 @@ jobs:
       uses: actions-rs/toolchain@v1
       with:
         profile: minimal
-        toolchain: stable
+        toolchain: beta
         override: true
+        target: ${{ matrix.target }}
     - name: Generate Cargo.lock and Cargo.version
       run: |
         cargo update
