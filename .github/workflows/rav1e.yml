@@ -43,8 +43,10 @@ jobs:
         profile: minimal
         toolchain: beta
         override: true
-        target: ${{ matrix.target }}
-        default: true
+    - run: |
+        rustup self update
+        rustup toolchain install beta-${{ matrix.target }}
+        rustup target add ${{ matrix.target }}
     - name: Generate Cargo.lock and Cargo.version
       run: |
         cargo update
