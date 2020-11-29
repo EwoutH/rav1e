@@ -6,14 +6,14 @@ jobs:
   build-macos:
 
     strategy:
-      fail-fast: false
+      #fail-fast: false
       matrix:
         conf:
          - cargo-build
          - cargo-test
          - cargo-c
         target:
-          - x86_64-apple-darwin
+          #- x86_64-apple-darwin
           - aarch64-apple-darwin
 
     env:
@@ -40,7 +40,7 @@ jobs:
     - run: curl https://sh.rustup.rs -sSf | sh -s -- --profile minimal --default-toolchain beta -y
     - run: rustup self update
     - run: rustup toolchain install beta-${{ matrix.target }}
-    - run: rustup target add beta-${{ matrix.target }}
+    - run: rustup target add ${{ matrix.target }}
     - name: Generate Cargo.lock and Cargo.version
       run: |
         cargo update
