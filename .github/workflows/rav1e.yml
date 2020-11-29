@@ -38,12 +38,13 @@ jobs:
       run: |
         brew install cargo-c
     - name: Install Rust
-      uses: actions-rs/toolchain@v1
+      uses: actions-rs/toolchain@master
       with:
         profile: minimal
         toolchain: beta
         override: true
         target: ${{ matrix.target }}
+        default: true
     - name: Generate Cargo.lock and Cargo.version
       run: |
         cargo update
