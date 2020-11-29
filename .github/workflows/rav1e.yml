@@ -37,13 +37,8 @@ jobs:
       if: matrix.conf == 'cargo-c'
       run: |
         brew install cargo-c
-    - name: Install Rust
-      uses: actions-rs/toolchain@master
-      with:
-        profile: minimal
-        toolchain: beta
-        override: true
     - run: |
+        curl https://sh.rustup.rs -sSf | sh -s -- --profile minimal --default-toolchain none
         rustup self update
         rustup toolchain install beta-${{ matrix.target }}
         rustup target add ${{ matrix.target }}
