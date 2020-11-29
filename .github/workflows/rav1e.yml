@@ -38,10 +38,10 @@ jobs:
       run: |
         brew install cargo-c
     - run: |
-        curl https://sh.rustup.rs -sSf | sh -s -y -- --profile minimal --default-toolchain none
-        rustup self update
-        rustup toolchain install beta-${{ matrix.target }}
-        rustup target add ${{ matrix.target }}
+        curl https://sh.rustup.rs -sSf | sh -s -- --profile minimal --default-toolchain none
+        rustup -y self update
+        rustup -y toolchain install beta-${{ matrix.target }}
+        rustup -y target add ${{ matrix.target }}
     - name: Generate Cargo.lock and Cargo.version
       run: |
         cargo update
