@@ -67,15 +67,15 @@ jobs:
     - name: Build
       if: matrix.conf == 'cargo-build'
       run: |
-        cargo build --release --target=${{ matrix.conf }}
+        cargo build --release --target=${{ matrix.target }}
     - name: Test
       if: matrix.conf == 'cargo-test'
       run: |
-        cargo test --workspace --verbose --target=${{ matrix.conf }}
+        cargo test --workspace --verbose --target=${{ matrix.target }}
     - name: Run cargo-c
       if: matrix.conf == 'cargo-c'
       run: |
-        cargo cbuild --target=${{ matrix.conf }}
+        cargo cbuild --target=${{ matrix.target }}
     - name: Stop sccache server
       run: |
         sccache --stop-server
