@@ -13,7 +13,7 @@ jobs:
          - cargo-test
          - cargo-c
         target:
-          #- x86_64-apple-darwin
+          - x86_64-apple-darwin
           - aarch64-apple-darwin
 
     env:
@@ -37,10 +37,14 @@ jobs:
       if: matrix.conf == 'cargo-c'
       run: |
         brew install cargo-c
-    - run: curl https://sh.rustup.rs -sSf | sh -s -- --profile minimal --default-toolchain beta -y
-    - run: rustup self update
-    - run: rustup toolchain install beta-${{ matrix.target }}
-    - run: rustup target add ${{ matrix.target }}
+    - name: Install Rust
+      uses: actions-rs/toolchain@master
+      with:
+        profile: minimal
+        toolchain: beta
+        override: true
+        target: ${{ matrix.target }}
+        default: true
     - name: Generate Cargo.lock and Cargo.version
       run: |
         cargo update
