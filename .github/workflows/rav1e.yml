@@ -304,22 +304,13 @@ jobs:
 
     strategy:
       matrix:
-        include:
-          - name: Cargo build (x64)
-            conf: cargo-build
-            target: x86_64-apple-darwin
-          - name: Cargo test (x64)
-            conf: cargo-test
-            target: x86_64-apple-darwin
-          - name: Cargo C-build (x64)
-            conf: cargo-c
-            target: x86_64-apple-darwin
-          - name: Cargo build (Arm64)
-            conf: cargo-build
-            target: aarch64-apple-darwin
-          - name: Cargo C-build (Arm64)
-            conf: cargo-c
-            target: aarch64-apple-darwin
+        conf:
+          - cargo-build
+          - cargo-test
+          - cargo-c
+        target:
+          - x86_64-apple-darwin
+          - aarch64-apple-darwin
 
     env:
       RUST_BACKTRACE: full
