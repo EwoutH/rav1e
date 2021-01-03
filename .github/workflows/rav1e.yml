@@ -2,16 +2,16 @@ name: rav1e
 on: [push, pull_request]
 
 jobs:
-  build-macos:
+  macos:
 
     strategy:
       matrix:
         conf:
-          - cargo-build
+          #- cargo-build
           - cargo-test
-          - cargo-c
+          #- cargo-c
         target:
-          - x86_64-apple-darwin
+          #- x86_64-apple-darwin
           - aarch64-apple-darwin
 
     env:
@@ -29,15 +29,12 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Install sccache
-      run: |
-        brew install sccache
+      run: brew install sccache
     - name: Install nasm
-      run: |
-        brew install nasm
+      run: brew install nasm
     - name: Install cargo-c
       if: matrix.conf == 'cargo-c'
-      run: |
-        brew install cargo-c
+      run: brew install cargo-c
     - name: Install Rust
       uses: actions-rs/toolchain@v1
       with:
@@ -56,8 +53,7 @@ jobs:
       with:
         path: ~/.cargo/registry/cache
         key: ${{ runner.os }}-${{ matrix.conf }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
-        restore-keys: |
-          ${{ runner.os }}-${{ matrix.conf }}-cargo-registry-
+        restore-keys: ${{ runner.os }}-${{ matrix.conf }}-cargo-registry-
     - name: Cache sccache output
       uses: actions/cache@v2
       continue-on-error: true
@@ -67,20 +63,15 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-${{ matrix.conf }}-sccache-
     - name: Start sccache server
-      run: |
-        sccache --start-server
+      run: sccache --start-server
     - name: Build
       if: matrix.conf == 'cargo-build'
-      run: |
-        cargo build --release --target=${{ matrix.target }}
+      run: cargo build --release --target=${{ matrix.target }}
     - name: Test
       if: matrix.conf == 'cargo-test'
-      run: |
-        cargo test --workspace --verbose --target=${{ matrix.target }}
+      run: cargo test --workspace --verbose --target=${{ matrix.target }}
     - name: Run cargo-c
       if: matrix.conf == 'cargo-c'
-      run: |
-        cargo cbuild --target=${{ matrix.target }}
+      run: cargo cbuild --target=${{ matrix.target }}
     - name: Stop sccache server
-      run: |
-        sccache --stop-server
+      run: sccache --stop-server
