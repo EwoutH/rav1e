@@ -84,29 +84,3 @@ jobs:
     - name: Stop sccache server
       run: |
         sccache --stop-server
-
-  build-windows:
-
-    strategy:
-      matrix:
-        conf:
-         - cargo-build
-         - cargo-test
-         - cargo-c
-        include:
-         - conf: cargo-build
-           toolchain: stable
-         - conf: cargo-test
-           toolchain: stable
-         - conf: cargo-c
-           toolchain: stable-x86_64-pc-windows-gnu
-
-    env:
-      RUST_BACKTRACE: full
-      RUSTC_WRAPPER: sccache
-      SCCACHE_CACHE_SIZE: 300M
-      SCCACHE_DIR: C:\sccache
-
-    if: >-
-     (github.event_name == 'push' && !endsWith(github.event.head_commit.message, 'CI: skip')) ||
-     (github.event_name == 'pull_request' && !contains(github.event.pull_request.labels.*.names, 'skip-ci'))
