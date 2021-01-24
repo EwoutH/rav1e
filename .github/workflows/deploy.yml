@@ -20,7 +20,7 @@ jobs:
          - conf: gnu
            toolchain: stable-x86_64-pc-windows-gnu
 
-    if: github.repository_owner == 'xiph'
+    #if: github.repository_owner == 'xiph'
     runs-on: windows-latest
 
     steps:
@@ -124,7 +124,7 @@ jobs:
            binaries: rav1e
            strip: aarch64-linux-gnu-strip
 
-    if: github.repository_owner == 'xiph'
+    #if: github.repository_owner == 'xiph'
     runs-on: ubuntu-latest
 
     steps:
@@ -207,7 +207,7 @@ jobs:
         path: rav1e-${{ steps.tagName.outputs.version }}-${{ matrix.name }}.tar.gz
 
   macos-binaries:
-    if: github.repository_owner == 'xiph'
+    #if: github.repository_owner == 'xiph'
     runs-on: macos-latest
 
     steps:
@@ -265,7 +265,7 @@ jobs:
 
   deploy:
     needs: [windows-binaries, linux-binaries, macos-binaries]
-    if: github.repository_owner == 'xiph'
+    #if: github.repository_owner == 'xiph'
     runs-on: ubuntu-latest
 
     steps:
