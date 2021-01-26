@@ -6,20 +6,15 @@ on:
 
 jobs:
   build-windows:
-
     strategy:
       matrix:
-        conf:
-         - cargo-build
-         - cargo-test
-         - cargo-c
         include:
          - conf: cargo-build
-           toolchain: stable
+         - conf: cargo-build
+           target: aarch64-pc-windows-msvc
          - conf: cargo-test
-           toolchain: stable
          - conf: cargo-c
-           toolchain: stable-x86_64-pc-windows-gnu
+           target: x86_64-pc-windows-gnu
 
     env:
       RUST_BACKTRACE: full
@@ -42,25 +37,13 @@ jobs:
         curl -LO "$LINK/$SCCACHE_FILE.tar.gz"
         tar xzf "$SCCACHE_FILE.tar.gz"
         echo "$Env:GITHUB_WORKSPACE/$SCCACHE_FILE" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
-    - name: Install nasm
-      run: |
-        $NASM_VERSION="2.15.05"
-        $LINK = "https://www.nasm.us/pub/nasm/releasebuilds/$NASM_VERSION/win64"
-        $NASM_FILE = "nasm-$NASM_VERSION-win64"
-        curl --ssl-no-revoke -LO "$LINK/$NASM_FILE.zip"
-        7z e -y "$NASM_FILE.zip" -o"C:\nasm"
-        echo "C:\nasm"  | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
-    - name: Set MSVC x86_64 linker path
-      run: |
-        $LinkGlob = "VC\Tools\MSVC\*\bin\Hostx64\x64"
-        $env:PATH = "$env:PATH;${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer"
-        $LinkPath = vswhere -latest -products * -find "$LinkGlob" | Select-Object -Last 1
-        echo "$LinkPath" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+    - uses: ilammy/setup-nasm@v1
     - name: Install ${{ matrix.toolchain }}
       uses: actions-rs/toolchain@v1
       with:
         profile: minimal
-        toolchain: ${{ matrix.toolchain }}
+        toolchain: stable
+        target: ${{ matrix.target }}
         override: true
     - name: Install cargo-c
       if: matrix.conf == 'cargo-c'
@@ -95,7 +78,7 @@ jobs:
     - name: Build
       if: matrix.conf == 'cargo-build'
       run: |
-        cargo build --release
+        cargo build --release --target ${{ matrix.target }}
     - name: Test
       if: matrix.conf == 'cargo-test'
       run: |
