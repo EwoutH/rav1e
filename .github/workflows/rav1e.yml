@@ -45,6 +45,7 @@ jobs:
         toolchain: stable
         target: ${{ matrix.target }}
         override: true
+        default: true
     - name: Install cargo-c
       if: matrix.conf == 'cargo-c'
       run: |
@@ -78,7 +79,7 @@ jobs:
     - name: Build
       if: matrix.conf == 'cargo-build'
       run: |
-        cargo build --release --target ${{ matrix.target }}
+        cargo build --release
     - name: Test
       if: matrix.conf == 'cargo-test'
       run: |
