@@ -7,12 +7,15 @@ on:
 jobs:
   build-windows:
     strategy:
+      fail-fast: false
       matrix:
         include:
          - conf: cargo-build
+           target: x86_64-pc-windows-msvc
          - conf: cargo-build
            target: aarch64-pc-windows-msvc
          - conf: cargo-test
+           target: x86_64-pc-windows-msvc
          - conf: cargo-c
            target: x86_64-pc-windows-gnu
 
@@ -49,7 +52,7 @@ jobs:
     - name: Install cargo-c
       if: matrix.conf == 'cargo-c'
       run: |
-        $LINK = "https://github.com/lu-zero/cargo-c/releases/download/v0.7.1"
+        $LINK = "https://github.com/lu-zero/cargo-c/releases/download/v0.7.2"
         $CARGO_C_FILE = "cargo-c-windows-msvc"
         curl -LO "$LINK/$CARGO_C_FILE.zip"
         7z e -y "$CARGO_C_FILE.zip" -o"${env:USERPROFILE}\.cargo\bin"
@@ -62,17 +65,17 @@ jobs:
       continue-on-error: true
       with:
         path: ~/.cargo/registry/cache
-        key: ${{ runner.os }}-${{ matrix.conf }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
+        key: ${{ runner.os }}-${{ matrix.conf }}-${{ matrix.target }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
         restore-keys: |
-          ${{ runner.os }}-${{ matrix.conf }}-cargo-registry-
+          ${{ runner.os }}-${{ matrix.conf }}-${{ matrix.target }}-cargo-registry-
     - name: Cache sccache output
       uses: actions/cache@v2
       continue-on-error: true
       with:
         path: C:\sccache
-        key: ${{ runner.os }}-${{ matrix.conf }}-sccache-${{ hashFiles('**/Cargo.*') }}
+        key: ${{ runner.os }}-${{ matrix.conf }}-${{ matrix.target }}-sccache-${{ hashFiles('**/Cargo.*') }}
         restore-keys: |
-          ${{ runner.os }}-${{ matrix.conf }}-sccache-
+          ${{ runner.os }}-${{ matrix.conf }}-${{ matrix.target }}-sccache-
     - name: Start sccache server
       run: |
         sccache --start-server
