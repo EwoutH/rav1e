@@ -17,7 +17,7 @@ jobs:
          - target: aarch64-pc-windows-msvc
          - target: x86_64-pc-windows-gnu
 
-    if: github.repository_owner == 'xiph'
+    #if: github.repository_owner == 'xiph'
     runs-on: windows-latest
 
     steps:
