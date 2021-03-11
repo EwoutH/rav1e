@@ -40,23 +40,24 @@ jobs:
       if: matrix.target == 'x86_64-pc-windows-msvc'
       run: |
         $LinkGlob = "VC\Tools\MSVC\*\bin\Hostx64\x64"
-        $LinkPath = vswhere -latest -products * -find "$LinkGlob" |
-                    Select-Object -Last 1
+        $env:PATH = "$env:PATH;${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer"
+        $LinkPath = vswhere -latest -products * -find "$LinkGlob" | Select-Object -Last 1
         echo "$LinkPath" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
 
     - name: Set MSVC Arm64 linker path
       if: matrix.target == 'aarch64-pc-windows-msvc'
       run: |
         $LinkGlob = "VC\Tools\MSVC\*\bin\Hostx64\Arm64"
-        $LinkPath = vswhere -latest -products * -find "$LinkGlob" |
-                    Select-Object -Last 1
+        $env:PATH = "$env:PATH;${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer"
+        $LinkPath = vswhere -latest -products * -find "$LinkGlob" | Select-Object -Last 1
         echo "$LinkPath" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
 
     - name: Install stable
       uses: actions-rs/toolchain@v1
       with:
         profile: minimal
-        toolchain: ${{ matrix.toolchain }}
+        toolchain: stable
+        target: ${{ matrix.target }}
         override: true
 
     - name: Build rav1e
