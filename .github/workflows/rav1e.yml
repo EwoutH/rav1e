@@ -7,7 +7,6 @@ on:
 jobs:
   build-windows:
     strategy:
-      fail-fast: false
       matrix:
         include:
          - conf: cargo-build
@@ -28,7 +27,6 @@ jobs:
     if: >-
      (github.event_name == 'push' && !endsWith(github.event.head_commit.message, 'CI: skip')) ||
      (github.event_name == 'pull_request' && !contains(github.event.pull_request.labels.*.names, 'skip-ci'))
-
     runs-on: windows-latest
 
     steps:
@@ -48,22 +46,20 @@ jobs:
         curl --ssl-no-revoke -LO "$LINK/$NASM_FILE.zip"
         7z e -y "$NASM_FILE.zip" -o"C:\nasm"
         echo "C:\nasm"  | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
-
     - name: Set MSVC x86_64 linker path
       if: matrix.target != 'aarch64-pc-windows-msvc'
       run: |
         $LinkGlob = "VC\Tools\MSVC\*\bin\Hostx64\x64"
-        $LinkPath = vswhere -latest -products * -find "$LinkGlob" |
-                    Select-Object -Last 1
+        $env:PATH = "$env:PATH;${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer"
+        $LinkPath = vswhere -latest -products * -find "$LinkGlob" | Select-Object -Last 1
         echo "$LinkPath" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
     - name: Set MSVC Arm64 linker path
       if: matrix.target == 'aarch64-pc-windows-msvc'
       run: |
         $LinkGlob = "VC\Tools\MSVC\*\bin\Hostx64\Arm64"
-        $LinkPath = vswhere -latest -products * -find "$LinkGlob" |
-                    Select-Object -Last 1
+        $env:PATH = "$env:PATH;${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer"
+        $LinkPath = vswhere -latest -products * -find "$LinkGlob" | Select-Object -Last 1
         echo "$LinkPath" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
-
     - name: Install ${{ matrix.toolchain }}
       uses: actions-rs/toolchain@v1
       with:
