@@ -11,14 +11,10 @@ jobs:
   windows-binaries:
     strategy:
       matrix:
-        conf:
-         - msvc
-         - gnu
         include:
-         - conf: msvc
-           toolchain: stable
-         - conf: gnu
-           toolchain: stable-x86_64-pc-windows-gnu
+         - target: x86_64-pc-windows-msvc
+         - target: aarch64-pc-windows-msvc
+         - target: x86_64-pc-windows-gnu
 
     if: github.repository_owner == 'xiph'
     runs-on: windows-latest
@@ -34,38 +30,43 @@ jobs:
         curl -LO "$LINK/$CARGO_C_FILE.zip"
         7z e -y "$CARGO_C_FILE.zip" -o"${env:USERPROFILE}\.cargo\bin"
 
-    - name: Set environment variables
-      if: matrix.conf == 'msvc'
-      run: |
-        $VsPath = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer"
-
     - name: Set MSVC x86_64 linker path
-      if: matrix.conf == 'msvc'
+      if: matrix.target == 'x86_64-pc-windows-msvc'
       run: |
         $LinkGlob = "VC\Tools\MSVC\*\bin\Hostx64\x64"
-        $LinkPath = vswhere -latest -products * -find "$LinkGlob" |
-                    Select-Object -Last 1
+        $env:PATH = "$env:PATH;${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer"
+        $LinkPath = vswhere -latest -products * -find "$LinkGlob" | Select-Object -Last 1
         echo "$LinkPath" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
 
-    - name: Install stable
+    - name: Set MSVC Arm64 linker path
+      if: matrix.target == 'aarch64-pc-windows-msvc'
+      run: |
+        $LinkGlob = "VC\Tools\MSVC\*\bin\Hostx64\Arm64"
+        $env:PATH = "$env:PATH;${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer"
+        $LinkPath = vswhere -latest -products * -find "$LinkGlob" | Select-Object -Last 1
+        echo "$LinkPath" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+
+    - name: Install ${{ matrix.target }}
       uses: actions-rs/toolchain@v1
       with:
         profile: minimal
-        toolchain: ${{ matrix.toolchain }}
+        toolchain: stable
+        target: ${{ matrix.target }}
         override: true
+        default: true
 
     - name: Build rav1e
-      run: cargo build --release
+      run: cargo build --release --target=${{ matrix.target }}
 
     - name: Strip rav1e gnu-binary
-      if: matrix.conf == 'gnu'
+      if: matrix.target == 'x86_64-pc-windows-gnu'
       run: strip target/release/rav1e.exe
 
     - name: Run cargo-c
       run:  cargo cinstall --release --destdir="C:\"
 
     - name: Rename cargo-c folder
-      run: Rename-Item "C:\usr\local" "C:\usr\rav1e-windows-${{ matrix.conf }}-sdk"
+      run: Rename-Item "C:\usr\local" "C:\usr\rav1e-${{ matrix.target }}-sdk"
 
     - name: Get the version
       if: startsWith(github.ref, 'refs/tags/v')
@@ -79,15 +80,15 @@ jobs:
       if: >
         startsWith(github.ref, 'refs/tags/p') || github.event_name == 'schedule'
       run: |
-        7z a rav1e-windows-${{ matrix.conf }}.zip `
-             "C:\usr\rav1e-windows-${{ matrix.conf }}-sdk"
+        7z a rav1e-${{ matrix.target }}.zip `
+             "C:\usr\rav1e-${{ matrix.target }}-sdk"
 
     - name: Package release binaries
       if: startsWith(github.ref, 'refs/tags/v')
       run: |
         $ZIP_PREFIX = "rav1e-${{ steps.tagName.outputs.version }}-windows"
         7z a "$ZIP_PREFIX-${{ matrix.conf }}.zip" `
-             "C:\usr\rav1e-windows-${{ matrix.conf }}-sdk"
+             "C:\usr\rav1e-${{ matrix.target }}-sdk"
 
     - name: Upload rav1e msvc binary
       if: matrix.conf == 'msvc'
@@ -100,13 +101,13 @@ jobs:
         startsWith(github.ref, 'refs/tags/p') || github.event_name == 'schedule'
       uses: actions/upload-artifact@v2
       with:
-        path: rav1e-windows-${{ matrix.conf }}.zip
+        path: rav1e-${{ matrix.target }}.zip
 
     - name: Upload release binaries
       if: startsWith(github.ref, 'refs/tags/v')
       uses: actions/upload-artifact@v2
       with:
-        path: rav1e-${{ steps.tagName.outputs.version }}-windows-${{ matrix.conf }}.zip
+        path: rav1e-${{ steps.tagName.outputs.version }}-${{ matrix.target }}.zip
 
   linux-binaries:
     strategy:
