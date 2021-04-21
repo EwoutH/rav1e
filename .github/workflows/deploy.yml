@@ -22,13 +22,6 @@ jobs:
     - uses: actions/checkout@v2
     - uses: ilammy/setup-nasm@v1
 
-    - name: Install cargo-c
-      run: |
-        $LINK = "https://github.com/lu-zero/cargo-c/releases/download/v0.7.1"
-        $CARGO_C_FILE = "cargo-c-windows-msvc"
-        curl -LO "$LINK/$CARGO_C_FILE.zip"
-        7z e -y "$CARGO_C_FILE.zip" -o"${env:USERPROFILE}\.cargo\bin"
-
     - name: Set MSVC x86_64 linker path
       if: matrix.target == 'x86_64-pc-windows-msvc'
       run: |
@@ -53,6 +46,13 @@ jobs:
         target: ${{ matrix.target }}
         override: true
         default: true
+
+    - name: Install cargo-c
+      run: |
+        $LINK = "https://github.com/lu-zero/cargo-c/releases/download/v0.8.0"
+        $CARGO_C_FILE = "cargo-c-windows-msvc"
+        curl -LO "$LINK/$CARGO_C_FILE.zip"
+        7z e -y "$CARGO_C_FILE.zip" -o"${env:USERPROFILE}\.cargo\bin"
 
     - name: Build rav1e
       run: cargo build --release --target=${{ matrix.target }}
