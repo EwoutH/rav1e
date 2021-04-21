@@ -13,7 +13,7 @@ jobs:
       matrix:
         include:
          - target: x86_64-pc-windows-msvc
-         - target: aarch64-pc-windows-msvc
+         #- target: aarch64-pc-windows-msvc
          - target: x86_64-pc-windows-gnu
 
     runs-on: windows-latest
