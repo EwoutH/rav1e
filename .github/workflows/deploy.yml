@@ -206,6 +206,14 @@ jobs:
         path: rav1e-${{ steps.tagName.outputs.version }}-${{ matrix.name }}.tar.gz
 
   macos-binaries:
+    strategy:
+      matrix:
+        include:
+         - target: x86_64-apple-darwin
+           arch: intel
+         - target: aarch64-apple-darwin
+           arch: apple-silicon
+
     runs-on: macos-latest
 
     steps:
@@ -219,10 +227,12 @@ jobs:
       with:
         profile: minimal
         toolchain: stable
+        target: ${{ matrix.target }}
         override: true
+        default: true
 
     - name: Build rav1e
-      run: cargo build --release
+      run: cargo build --release --target=${{ matrix.target }}
 
     - name: Strip rav1e
       run: strip target/release/rav1e
@@ -239,12 +249,12 @@ jobs:
         startsWith(github.ref, 'refs/tags/p') || github.event_name == 'schedule'
       run: |
         cd target/release
-        zip -9 $GITHUB_WORKSPACE/rav1e-macos.zip rav1e
+        zip -9 $GITHUB_WORKSPACE/rav1e-macos-${{ matrix.arch }}.zip rav1e
 
     - name: Create a release zip
       if: startsWith(github.ref, 'refs/tags/v')
       run: |
-        ZIP_FILE=rav1e-${{ steps.tagName.outputs.version }}-macos.zip
+        ZIP_FILE=rav1e-${{ steps.tagName.outputs.version }}-macos-${{ matrix.arch }}.zip
         cd target/release
         zip -9 $GITHUB_WORKSPACE/$ZIP_FILE rav1e
 
@@ -253,13 +263,13 @@ jobs:
         startsWith(github.ref, 'refs/tags/p') || github.event_name == 'schedule'
       uses: actions/upload-artifact@v2
       with:
-        path: rav1e-macos.zip
+        path: rav1e-macos-${{ matrix.arch }}.zip
 
     - name: Upload release binaries
       if: startsWith(github.ref, 'refs/tags/v')
       uses: actions/upload-artifact@v2
       with:
-        path: rav1e-${{ steps.tagName.outputs.version }}-macos.zip
+        path: rav1e-${{ steps.tagName.outputs.version }}-macos-${{ matrix.arch }}.zip
 
   deploy:
     needs: [windows-binaries, linux-binaries, macos-binaries]
@@ -309,9 +319,11 @@ jobs:
           rav1e.exe
           rav1e-linux.tar.gz
           rav1e-aarch64-linux.tar.gz
-          rav1e-macos.zip
-          rav1e-windows-msvc.zip
-          rav1e-windows-gnu.zip
+          rav1e-macos-intel.zip
+          rav1e-macos-apple-silicon.zip
+          rav1e-x86_64-pc-windows-msvc.zip
+          rav1e-aarch64-pc-windows-msvc.zip
+          rav1e-x86_64-pc-windows-gnu.zip
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -326,9 +338,11 @@ jobs:
           rav1e.exe
           rav1e-linux.tar.gz
           rav1e-aarch64-linux.tar.gz
-          rav1e-macos.zip
-          rav1e-windows-msvc.zip
-          rav1e-windows-gnu.zip
+          rav1e-macos-intel.zip
+          rav1e-macos-apple-silicon.zip
+          rav1e-x86_64-pc-windows-msvc.zip
+          rav1e-aarch64-pc-windows-msvc.zip
+          rav1e-x86_64-pc-windows-gnu.zip
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -342,8 +356,10 @@ jobs:
           rav1e.exe
           rav1e-${{ steps.tagName.outputs.version }}-linux.tar.gz
           rav1e-${{ steps.tagName.outputs.version }}-aarch64-linux.tar.gz
-          rav1e-${{ steps.tagName.outputs.version }}-macos.zip
-          rav1e-${{ steps.tagName.outputs.version }}-windows-msvc.zip
-          rav1e-${{ steps.tagName.outputs.version }}-windows-gnu.zip
+          rav1e-${{ steps.tagName.outputs.version }}-macos-intel.zip
+          rav1e-${{ steps.tagName.outputs.version }}-macos-apple-silicon.zip
+          rav1e-${{ steps.tagName.outputs.version }}-x86_64-pc-windows-msvc.zip
+          rav1e-${{ steps.tagName.outputs.version }}-aarch64-pc-windows-msvc.zip
+          rav1e-${{ steps.tagName.outputs.version }}-x86_64-pc-windows-gnu.zip
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
