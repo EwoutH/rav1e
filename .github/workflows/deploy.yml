@@ -86,12 +86,12 @@ jobs:
     - name: Package release binaries
       if: startsWith(github.ref, 'refs/tags/v')
       run: |
-        $ZIP_PREFIX = "rav1e-${{ steps.tagName.outputs.version }}-windows"
-        7z a "$ZIP_PREFIX-${{ matrix.conf }}.zip" `
+        $ZIP_PREFIX = "rav1e-${{ steps.tagName.outputs.version }}"
+        7z a "$ZIP_PREFIX-${{ matrix.target }}.zip" `
              "C:\usr\rav1e-${{ matrix.target }}-sdk"
 
-    - name: Upload rav1e msvc binary
-      if: matrix.conf == 'msvc'
+    - name: Upload rav1e msvc x64 binary
+      if: matrix.target == 'aarch64-pc-windows-msvc'
       uses: actions/upload-artifact@v2
       with:
         path: target/release/rav1e.exe
